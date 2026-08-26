@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Formal Android APK
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Find newest project ZIP
+      - name: Find formal release ZIP
         shell: bash
         run: |
-          ZIP_FILE=$(ls senior-calculator-app-v*.zip | sort -V | tail -n 1)
+          ZIP_FILE="senior-calculator-app-v1.0.0-release.zip"
           echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
           echo "Using $ZIP_FILE"
 
@@ -41,13 +41,18 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build Debug APK
+      - name: Build signed release APK
         working-directory: build_source
-        run: gradle :app:assembleDebug --stacktrace
+        run: gradle :app:assembleRelease --stacktrace
 
-      - name: Upload APK
+      - name: Rename APK
+        run: |
+          cp build_source/app/build/outputs/apk/release/app-release.apk \
+             Senior-Calculator-v1.0.0.apk
+
+      - name: Upload formal APK
         uses: actions/upload-artifact@v4
         with:
-          name: senior-calculator-debug-apk
-          path: build_source/app/build/outputs/apk/debug/app-debug.apk
+          name: Senior-Calculator-v1.0.0
+          path: Senior-Calculator-v1.0.0.apk
           if-no-files-found: error
