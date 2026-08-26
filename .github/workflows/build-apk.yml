@@ -14,11 +14,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Find newest project ZIP
+        shell: bash
+        run: |
+          ZIP_FILE=$(ls senior-calculator-app-v*.zip | sort -V | tail -n 1)
+          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
+          echo "Using $ZIP_FILE"
+
       - name: Unzip Android project
         run: |
           rm -rf build_source
           mkdir build_source
-          unzip -q senior-calculator-app-v1.zip -d build_source
+          unzip -q "$ZIP_FILE" -d build_source
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
